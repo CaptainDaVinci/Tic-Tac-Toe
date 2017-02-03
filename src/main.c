@@ -26,10 +26,12 @@ int main(void)
         player1 = 'X';
         player2 = 'O';
     }
+
+    display(game);
+
     printf("Player 1 - %c\n", player1);
     printf("Player 2 - %c\n", player2);
 
-    display(game);
     startGame(game, player1, player2);
 }
 
@@ -43,10 +45,10 @@ void display(char game[][3])
         for(int j = 0; j < 3; j++)
         {
             if(game[i][j] == 'X')
-                printf(ANSI_COLOR_RED     "\tX" ANSI_COLOR_RESET);
+                printf(ANSI_COLOR_RED "\tX" ANSI_COLOR_RESET);
 
             else if(game[i][j] == 'O')
-                printf(ANSI_COLOR_GREEN   "\tO" ANSI_COLOR_RESET);
+                printf(ANSI_COLOR_GREEN "\tO" ANSI_COLOR_RESET);
             else
                 printf("\t%c", game[i][j]);
         }
@@ -64,7 +66,7 @@ void startGame(char game[3][3], const char player1, const char player2)
         return;
     }
 
-    printf("Player 1's turn - ");
+    printf(ANSI_COLOR_RED "Player 1's turn - " ANSI_COLOR_RESET);
     scanf("%d", &option);
 
     for(int i = 0; i < 3; i++)
@@ -78,14 +80,20 @@ void startGame(char game[3][3], const char player1, const char player2)
         }
     }
 
-    display(game);
-    if(gameStatus(game))
+    if(checkGame(game))
     {
-        printf("Game Over!\nPlayer 1 Wins !!!!!\n");
+        printf("Game Over!\nNo More Possible Moves\n");
         return;
     }
 
-    printf("Player 2's turn - ");
+    display(game);
+    if(gameStatus(game))
+    {
+        printf(ANSI_COLOR_RED "Player 1 Wins !" ANSI_COLOR_RESET "\n");
+        return;
+    }
+
+    printf(ANSI_COLOR_GREEN "Player 2's turn - " ANSI_COLOR_RESET);
     scanf("%d", &option);
 
     for(int i = 0; i < 3; i++)
@@ -102,7 +110,7 @@ void startGame(char game[3][3], const char player1, const char player2)
     display(game);
     if(gameStatus(game))
     {
-        printf("Game Over!\nPlayer 2 Wins !!!!!\n");
+        printf(ANSI_COLOR_GREEN "Player 2 Wins !" ANSI_COLOR_RESET "\n");
         return;
     }
 
