@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <ctype.h>
 
 // Adds colour to the output.
 #define ANSI_COLOR_RED     "\x1b[31m"
@@ -18,10 +19,13 @@ int main(void)
     char game[3][3] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
     char player1 = 'O', player2 = 'X';
     char choice;
-    int option;
 
-    printf("X or O ?\n");
-    scanf("%c", &choice);
+    do
+    {
+        printf("X or O ?\n");
+        scanf(" %c", &choice);
+
+    }while(choice != 'X' && choice != 'O' && choice != 'x' && choice != 'o');
 
     // assigns X or O to the two players.
     if(choice == 'x' || choice == 'X')
@@ -63,34 +67,23 @@ void display(char game[][3])
 
 void startGame(char game[3][3], const char player1, const char player2)
 {
-    int option;
+    char choice;
 
-    // checks if the game has any possible moves that can be played.
-    // also acts as the base case for the game to end.
-    if(checkGame(game))
+    do
     {
-        printf("Game Over!\nNo More Possible Moves\n");
-        return;
-    }
+        printf("Player 1's turn : ");
+        scanf(" %c", &choice);
 
-    printf("Player 1's turn - ");
-    scanf("%d", &option);
+    }while(!isdigit(choice));
 
     // Assigns either X or O to the spot where the player 1 wants to mark.
     for(int i = 0; i < 3; i++)
         for(int j = 0; j < 3; j++)
-            if(game[i][j] - '0' == option)
+            if(game[i][j] == choice)
                 game[i][j] = player1;
 
-    // checks if there are any further moves possible.
-    // also acts as the base case for the game to end.
-    if(checkGame(game))
-    {
-        printf("Game Over!\nNo More Possible Moves\n");
-        return;
-    }
-
     display(game);
+
 
     // checks if the player 1 has won the game or not.
     // also acts as the base case for the game to end.
@@ -100,13 +93,25 @@ void startGame(char game[3][3], const char player1, const char player2)
         return;
     }
 
-    printf("Player 2's turn - ");
-    scanf("%d", &option);
+    // checks if there are any further moves possible.
+    // also acts as the base case for the game to end.
+    if(checkGame(game))
+    {
+        printf("Game Over!\nNo More Possible Moves\n");
+        return;
+    }
+
+    do
+    {
+        printf("Player 2's turn : ");
+        scanf(" %c", &choice);
+
+    }while(!isdigit(choice));
 
     // Assigns either X or O to the spot where the player 2 wants to mark.
     for(int i = 0; i < 3; i++)
         for(int j = 0; j < 3; j++)
-            if(game[i][j] - '0' == option)
+            if(game[i][j] == choice)
                 game[i][j] = player2;
 
     display(game);
@@ -116,6 +121,14 @@ void startGame(char game[3][3], const char player1, const char player2)
     if(gameStatus(game))
     {
         printf("Player 2 Wins !\n");
+        return;
+    }
+
+    // checks if the game has any possible moves that can be played.
+    // also acts as the base case for the game to end.
+    if(checkGame(game))
+    {
+        printf("Game Over!\nNo More Possible Moves\n");
         return;
     }
 
