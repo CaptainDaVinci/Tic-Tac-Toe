@@ -7,7 +7,7 @@ OS : linux - Ubuntu.
 
 #Usage
 
-compile the code  and run the code using :
+compile and run the code using :
 
 $ gcc main.c -o game                                                            
 $ ./game
