@@ -22,7 +22,7 @@ int main(void)
 {
     // A two-dimensional array depicting the game.
     char game[3][3] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
-    char player1 = 'O', player2 = 'X';
+    char player1 = 'O', computer = 'X';
     char choice;
 
     do
@@ -36,16 +36,16 @@ int main(void)
     if(choice == 'x' || choice == 'X')
     {
         player1 = 'X';
-        player2 = 'O';
+        computer = 'O';
     }
 
     display(game);
 
     printf("Player 1 - %c\n", player1);
-    printf("Player 2 - %c\n", player2);
+    printf("Computer - %c\n", computer);
 
 
-    startGame(game, player1, player2);
+    startGame(game, player1, computer);
 }
 
 // displays the game's current status.
@@ -53,10 +53,11 @@ void display(char game[][3])
 {
     system("clear");
 
+    int i, j;
     printf("\n\t------------------\n");
-    for(int i = 0; i < 3; i++)
+    for( i = 0; i < 3; i++)
     {
-        for(int j = 0; j < 3; j++)
+        for( j = 0; j < 3; j++)
         {
             if(game[i][j] == 'X')
                 printf(ANSI_COLOR_RED "\tX" ANSI_COLOR_RESET);
@@ -71,8 +72,9 @@ void display(char game[][3])
     }
 }
 
-void startGame(char game[3][3], const char player1, const char player2)
+void startGame(char game[3][3], const char player1, const char computer)
 {
+    int i, j;
     int userChoice, compChoice;
 
     do
@@ -84,8 +86,8 @@ void startGame(char game[3][3], const char player1, const char player2)
 
     validPos[userChoice] = false;
     // Assigns either X or O to the spot where the player 1 wants to mark.
-    for(int i = 0; i < 3; i++)
-        for(int j = 0; j < 3; j++)
+    for( i = 0; i < 3; i++)
+        for( j = 0; j < 3; j++)
             if(game[i][j] - '0' == userChoice)
                 game[i][j] = player1;
 
@@ -121,10 +123,10 @@ void startGame(char game[3][3], const char player1, const char player2)
     validPos[compChoice] = false;
 
     // Assigns either X or O to the spot where the player 2 wants to mark.
-    for(int i = 0; i < 3; i++)
-        for(int j = 0; j < 3; j++)
+    for( i = 0; i < 3; i++)
+        for( j = 0; j < 3; j++)
             if(game[i][j] - '0' == compChoice)
-                game[i][j] = player2;
+                game[i][j] = computer;
 
     display(game);
 
@@ -145,7 +147,7 @@ void startGame(char game[3][3], const char player1, const char player2)
     }
 
     // recursive call to continue the game.
-    startGame(game, player1, player2);
+    startGame(game, player1, computer);
 }
 
 // checks if the game is completed when there are 3 consecutive X or O
@@ -178,8 +180,9 @@ bool gameStatus(char game[][3])
 // checks if there are any further moves possible.
 bool checkGame(char game[][3])
 {
-    for(int i = 0; i < 3; i++)
-        for(int j = 0; j < 3; j++)
+    int i, j;
+    for( i = 0; i < 3; i++)
+        for( j = 0; j < 3; j++)
             if(game[i][j] != 'X' && game[i][j] != 'O')
                 return false;
 
@@ -188,39 +191,6 @@ bool checkGame(char game[][3])
 
 int goodMove(char game[][3], int choice)
 {
-    if(flag == 0)
-    {
-        if(validPos[5])
-        {
-            flag = 1;
-            return 5;
-        }
-
-        if(validPos[1])
-        {
-            flag = 1;
-            return 1;
-        }
-
-        if(validPos[3])
-        {
-            flag = 1;
-            return 3;
-        }
-
-        if(validPos[7])
-        {
-            flag = 1;
-            return 7;
-        }
-
-        if(validPos[9])
-        {
-            flag = 1;
-            return 9;
-        }
-    }
-
     int i, j;
 
     for(i = 0; i < 3; i++)
@@ -264,6 +234,37 @@ int goodMove(char game[][3], int choice)
 
     if(game[1][1] == game[2][0] && validPos[game[0][2] - '0'])
         return game[0][2] - '0';
+
+        if(validPos[5])
+        {
+            flag = 1;
+            return 5;
+        }
+        
+        if(validPos[7])
+        {
+            flag = 1;
+            return 7;
+        }
+
+        if(validPos[3])
+        {
+            flag = 1;
+            return 3;
+        }
+
+        if(validPos[1])
+        {
+            flag = 1;
+            return 1;
+        }
+
+
+        if(validPos[9])
+        {
+            flag = 1;
+            return 9;
+        }
 
     return choice;
 }
