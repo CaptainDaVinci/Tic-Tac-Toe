@@ -242,59 +242,47 @@ int goodMove(char game[][3], int choice, char computer)
     {
         move = game[2][2] - '0';
         if(game[0][0] == computer)
-        {
             return move;
-        }
     }
 
     if(game[0][0] == game[2][2] && validPos[game[1][1] - '0'])
     {
         move = game[1][1] - '0';
         if(game[0][0] == computer)
-        {
             return move;
-        }
     }
 
     if(game[1][1] == game[2][2] && validPos[game[0][0] - '0'])
     {
         move = game[0][0] - '0';
         if(game[1][1] == computer)
-        {
             return move;
-        }
     }
 
     if(game[0][2] == game[1][1] && validPos[game[2][0] - '0'])
     {
         move = game[2][0] - '0';
         if(game[0][2] == computer)
-        {
             return move;
-        }
     }
 
     if(game[0][2] == game[2][0] && validPos[game[1][1] - '0'])
     {
         move = game[1][1] - '0';
         if(game[0][2] == computer)
-        {
             return move;
-        }
     }
 
     if(game[1][1] == game[2][0] && validPos[game[0][2] - '0'])
     {
         move = game[0][2] - '0';
         if(game[1][1] == computer)
-        {
             return move;
-        }
     }
 
     if(move != 0)
         return move;
-        
+
     switch(rand() % 6)
     {
         case 0 : if(validPos[5])
