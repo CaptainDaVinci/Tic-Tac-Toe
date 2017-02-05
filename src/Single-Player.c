@@ -10,19 +10,18 @@
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
 void display(char [][3]);
-bool checkGame(char [][3]);
+bool isComplete(char [][3]);
 bool gameStatus(char [][3]);
 void startGame(char [][3], const char, const char);
 int goodMove(char [][3], int);
 
 bool validPos[10] = {false, true, true, true, true, true, true, true, true, true};
-int flag = 0;
 
 int main(void)
 {
     // A two-dimensional array depicting the game.
     char game[3][3] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
-    char player1 = 'O', computer = 'X';
+    char user = 'O', computer = 'X';
     char choice;
 
     do
@@ -35,17 +34,16 @@ int main(void)
     // assigns X or O to the two players.
     if(choice == 'x' || choice == 'X')
     {
-        player1 = 'X';
+        user = 'X';
         computer = 'O';
     }
 
     display(game);
 
-    printf("Player 1 - %c\n", player1);
+    printf("You - %c\n", user);
     printf("Computer - %c\n", computer);
 
-
-    startGame(game, player1, computer);
+    startGame(game, user, computer);
 }
 
 // displays the game's current status.
@@ -72,39 +70,39 @@ void display(char game[][3])
     }
 }
 
-void startGame(char game[3][3], const char player1, const char computer)
+void startGame(char game[3][3], const char user, const char computer)
 {
     int i, j;
-    int userChoice, compChoice;
+    int choice;
 
     do
     {
-        printf("Player 1's turn : ");
-        scanf("%d", &userChoice);
+        printf("Your turn : ");
+        scanf("%d", &choice);
 
-    }while((userChoice > 9 || userChoice < 1) || !validPos[userChoice]);
+    }while((choice > 9 || choice < 1) || !validPos[choice]);
 
-    validPos[userChoice] = false;
-    // Assigns either X or O to the spot where the player 1 wants to mark.
+    validPos[choice] = false;
+
+    // Assigns either X or O to the spot where the Your turn wants to mark.
     for( i = 0; i < 3; i++)
         for( j = 0; j < 3; j++)
-            if(game[i][j] - '0' == userChoice)
-                game[i][j] = player1;
+            if(game[i][j] - '0' == choice)
+                game[i][j] = user;
 
     display(game);
 
-
-    // checks if the player 1 has won the game or not.
+    // checks if the Your turn has won the game or not.
     // also acts as the base case for the game to end.
     if(gameStatus(game))
     {
-        printf("Player 1 Wins !\n");
+        printf("You Win !\n");
         return;
     }
 
     // checks if there are any further moves possible.
     // also acts as the base case for the game to end.
-    if(checkGame(game))
+    if(isComplete(game))
     {
         printf("Game Over!\nNo More Possible Moves\n");
         return;
@@ -113,19 +111,17 @@ void startGame(char game[3][3], const char player1, const char computer)
     srand((unsigned)time(NULL));
     do
     {
-        compChoice = rand() % 11;
+        choice = rand() % 11;
 
-    }while((compChoice > 9 || compChoice < 1) || !validPos[compChoice]);
+    }while((choice > 9 || choice < 1) || !validPos[choice]);
 
-    printf("%d\n", compChoice);
-    compChoice = goodMove(game, compChoice);
-    printf("%d\n", compChoice);
-    validPos[compChoice] = false;
+    choice = goodMove(game, choice);
+    validPos[choice] = false;
 
     // Assigns either X or O to the spot where the player 2 wants to mark.
     for( i = 0; i < 3; i++)
         for( j = 0; j < 3; j++)
-            if(game[i][j] - '0' == compChoice)
+            if(game[i][j] - '0' == choice)
                 game[i][j] = computer;
 
     display(game);
@@ -140,14 +136,14 @@ void startGame(char game[3][3], const char player1, const char computer)
 
     // checks if the game has any possible moves that can be played.
     // also acts as the base case for the game to end.
-    if(checkGame(game))
+    if(isComplete(game))
     {
         printf("Game Over!\nNo More Possible Moves\n");
         return;
     }
 
     // recursive call to continue the game.
-    startGame(game, player1, computer);
+    startGame(game, user, computer);
 }
 
 // checks if the game is completed when there are 3 consecutive X or O
@@ -178,7 +174,7 @@ bool gameStatus(char game[][3])
 }
 
 // checks if there are any further moves possible.
-bool checkGame(char game[][3])
+bool isComplete(char game[][3])
 {
     int i, j;
     for( i = 0; i < 3; i++)
@@ -235,36 +231,23 @@ int goodMove(char game[][3], int choice)
     if(game[1][1] == game[2][0] && validPos[game[0][2] - '0'])
         return game[0][2] - '0';
 
-        if(validPos[5])
-        {
-            flag = 1;
-            return 5;
-        }
-        
-        if(validPos[7])
-        {
-            flag = 1;
-            return 7;
-        }
+    switch(rand() % 6)
+    {
+        case 0 : if(validPos[5])
+                    return 5;
 
-        if(validPos[3])
-        {
-            flag = 1;
-            return 3;
-        }
+        case 1 : if(validPos[7] && validPos[3])
+                    return 7;
 
-        if(validPos[1])
-        {
-            flag = 1;
-            return 1;
-        }
+        case 2 : if(validPos[3] && validPos[7])
+                    return 3;
 
+        case 3 : if(validPos[1] && validPos[9])
+                    return 1;
 
-        if(validPos[9])
-        {
-            flag = 1;
-            return 9;
-        }
+        case 4 : if(validPos[5])
+                    return 5;
 
-    return choice;
+        default : return choice;
+    }
 }

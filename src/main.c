@@ -9,9 +9,12 @@
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
 void display(char [][3]);
-bool checkGame(char [][3]);
+bool isComplete(char [][3]);
 bool gameStatus(char [][3]);
 void startGame(char [][3], const char, const char);
+
+// keeps track of all the valid positions left in the game.
+bool validPos[10] = {false, true, true, true, true, true, true, true, true, true};
 
 int main(void)
 {
@@ -45,12 +48,15 @@ int main(void)
 // displays the game's current status.
 void display(char game[][3])
 {
+    int i, j;
+
+    // use system("cls"); if using windows.
     system("clear");
 
     printf("\n\t------------------\n");
-    for(int i = 0; i < 3; i++)
+    for(i = 0; i < 3; i++)
     {
-        for(int j = 0; j < 3; j++)
+        for(j = 0; j < 3; j++)
         {
             if(game[i][j] == 'X')
                 printf(ANSI_COLOR_RED "\tX" ANSI_COLOR_RESET);
@@ -67,6 +73,7 @@ void display(char game[][3])
 
 void startGame(char game[3][3], const char player1, const char player2)
 {
+    int i, j;
     char choice;
 
     do
@@ -74,11 +81,13 @@ void startGame(char game[3][3], const char player1, const char player2)
         printf("Player 1's turn : ");
         scanf(" %c", &choice);
 
-    }while(!isdigit(choice));
+    }while(!isdigit(choice) || !validPos[choice - '0']);
+
+    validPos[choice - '0'] = false;
 
     // Assigns either X or O to the spot where the player 1 wants to mark.
-    for(int i = 0; i < 3; i++)
-        for(int j = 0; j < 3; j++)
+    for(i = 0; i < 3; i++)
+        for(j = 0; j < 3; j++)
             if(game[i][j] == choice)
                 game[i][j] = player1;
 
@@ -95,7 +104,7 @@ void startGame(char game[3][3], const char player1, const char player2)
 
     // checks if there are any further moves possible.
     // also acts as the base case for the game to end.
-    if(checkGame(game))
+    if(isComplete(game))
     {
         printf("Game Over!\nNo More Possible Moves\n");
         return;
@@ -106,11 +115,13 @@ void startGame(char game[3][3], const char player1, const char player2)
         printf("Player 2's turn : ");
         scanf(" %c", &choice);
 
-    }while(!isdigit(choice));
+    }while(!isdigit(choice) || !validPos[choice - '0']);
+
+    validPos[choice - '0'] = false;
 
     // Assigns either X or O to the spot where the player 2 wants to mark.
-    for(int i = 0; i < 3; i++)
-        for(int j = 0; j < 3; j++)
+    for(i = 0; i < 3; i++)
+        for(j = 0; j < 3; j++)
             if(game[i][j] == choice)
                 game[i][j] = player2;
 
@@ -126,7 +137,7 @@ void startGame(char game[3][3], const char player1, const char player2)
 
     // checks if the game has any possible moves that can be played.
     // also acts as the base case for the game to end.
-    if(checkGame(game))
+    if(isComplete(game))
     {
         printf("Game Over!\nNo More Possible Moves\n");
         return;
@@ -138,7 +149,7 @@ void startGame(char game[3][3], const char player1, const char player2)
 
 // checks if the game is completed when there are 3 consecutive X or O
 // along a row, coloumn or either of the diagonals.
-bool gameStatus(char game[][3])
+int gameStatus(char game[][3])
 {
     int i, j;
 
@@ -153,23 +164,23 @@ bool gameStatus(char game[][3])
             return true;
 
     // checks along right diagonal.
-    for(i = 0, j = 0; i < 2; i++)
-        if(game[i][j] == game[i + 1][j + 1] && game[i][j] == game[i + 2][j + 2])
-            return true;
+    if(game[0][0] == game[1][1] && game[0][0] == game[2][2])
+        return true;
 
     // checks along left diagonal.
-    for(i = 0, j = 2; i < 2; i++)
-        if(game[i][j] == game[i + 1][j - 1] && game[i][j] == game[i + 2][j - 2])
-            return true;
+    if(game[0][2] == game[1][1] && game[0][2] == game[2][0])
+        return true;
 
     return false;
 }
 
 // checks if there are any further moves possible.
-bool checkGame(char game[][3])
+bool isComplete(char game[][3])
 {
-    for(int i = 0; i < 3; i++)
-        for(int j = 0; j < 3; j++)
+    int i, j;
+
+    for(i = 0; i < 3; i++)
+        for(j = 0; j < 3; j++)
             if(game[i][j] != 'X' && game[i][j] != 'O')
                 return false;
 
