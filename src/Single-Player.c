@@ -13,7 +13,7 @@ void display(char [][3]);
 bool isComplete(char [][3]);
 bool gameStatus(char [][3]);
 void startGame(char [][3], const char, const char);
-int goodMove(char [][3], int);
+int goodMove(char [][3], int, char);
 
 bool validPos[10] = {false, true, true, true, true, true, true, true, true, true};
 
@@ -115,7 +115,7 @@ void startGame(char game[3][3], const char user, const char computer)
 
     }while((choice > 9 || choice < 1) || !validPos[choice]);
 
-    choice = goodMove(game, choice);
+    choice = goodMove(game, choice, computer);
     validPos[choice] = false;
 
     // Assigns either X or O to the spot where the player 2 wants to mark.
@@ -185,9 +185,51 @@ bool isComplete(char game[][3])
     return true;
 }
 
-int goodMove(char game[][3], int choice)
+int goodMove(char game[][3], int choice, char computer)
 {
     int i, j;
+
+    for(i = 0; i < 3; i++)
+    {
+        if(game[i][0] == game[i][1] && game[i][0] == computer && validPos[game[i][2] - '0'])
+            return game[i][2] - '0';
+
+        if(game[i][0] == game[i][2] && game[i][0] == computer && validPos[game[i][1] - '0'])
+            return game[i][1] - '0';
+
+        if(game[i][1] == game[i][2] && game[i][1] == computer && validPos[game[i][0] - '0'])
+            return game[i][0] - '0';
+    }
+
+    for(j = 0; j < 3; j++)
+    {
+        if(game[0][j] == game[1][j] && game[0][j] == computer && validPos[game[2][j] - '0'])
+            return game[2][j] - '0';
+
+        if(game[1][j] == game[2][j] && game[1][j] == computer && validPos[game[0][j] - '0'])
+            return game[0][j] - '0';
+
+        if(game[0][j] == game[2][j] && game[0][j] == computer && validPos[game[1][j] - '0'])
+            return game[1][j] - '0';
+    }
+
+    if(game[0][0] == game[1][1] && game[0][0] == computer && validPos[game[2][2] - '0'])
+        return game[2][2] - '0';
+
+    if(game[0][0] == game[2][2] && game[0][0] == computer && validPos[game[1][1] - '0'])
+        return game[1][1] - '0';
+
+    if(game[1][1] == game[2][2] && game[1][1] == computer && validPos[game[0][0] - '0'])
+        return game[0][0] - '0';
+
+    if(game[0][2] == game[1][1] && game[0][2] == computer && validPos[game[2][0] - '0'])
+        return game[2][0] - '0';
+
+    if(game[0][2] == game[2][0] && game[0][2] == computer && validPos[game[1][1] - '0'])
+        return game[1][1] - '0';
+
+    if(game[1][1] == game[2][0] && game[1][1] == computer && validPos[game[0][2] - '0'])
+        return game[0][2] - '0';
 
     for(i = 0; i < 3; i++)
     {
