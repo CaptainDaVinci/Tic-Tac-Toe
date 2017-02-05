@@ -149,7 +149,7 @@ void startGame(char game[3][3], const char player1, const char player2)
 
 // checks if the game is completed when there are 3 consecutive X or O
 // along a row, coloumn or either of the diagonals.
-int gameStatus(char game[][3])
+bool gameStatus(char game[][3])
 {
     int i, j;
 
