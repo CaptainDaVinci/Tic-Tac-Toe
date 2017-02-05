@@ -9,7 +9,8 @@ OS : linux - Ubuntu.
 
 compile and run the code using :
 
-$ gcc main.c -o game                                                            
+$ gcc Multi-Player.c -o game                                                            
+
 $ ./game
 
-Choose either X or O for the first player, then enter the posibition where you would want to place X or O. 
+Choose either X or O for the first player, then enter the posibition where you would want to place X or O.
