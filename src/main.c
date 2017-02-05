@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <ctype.h>
-#include <time.h>
 
 // Adds colour to the output.
 #define ANSI_COLOR_RED     "\x1b[31m"
@@ -13,10 +12,6 @@ void display(char [][3]);
 bool checkGame(char [][3]);
 bool gameStatus(char [][3]);
 void startGame(char [][3], const char, const char);
-int goodMove(char [][3], int);
-
-bool validPos[10] = {false, true, true, true, true, true, true, true, true, true};
-int flag = 0;
 
 int main(void)
 {
@@ -43,7 +38,6 @@ int main(void)
 
     printf("Player 1 - %c\n", player1);
     printf("Player 2 - %c\n", player2);
-
 
     startGame(game, player1, player2);
 }
@@ -73,20 +67,19 @@ void display(char game[][3])
 
 void startGame(char game[3][3], const char player1, const char player2)
 {
-    int userChoice, compChoice;
+    char choice;
 
     do
     {
         printf("Player 1's turn : ");
-        scanf("%d", &userChoice);
+        scanf(" %c", &choice);
 
-    }while((userChoice > 9 || userChoice < 1) || !validPos[userChoice]);
+    }while(!isdigit(choice));
 
-    validPos[userChoice] = false;
     // Assigns either X or O to the spot where the player 1 wants to mark.
     for(int i = 0; i < 3; i++)
         for(int j = 0; j < 3; j++)
-            if(game[i][j] - '0' == userChoice)
+            if(game[i][j] == choice)
                 game[i][j] = player1;
 
     display(game);
@@ -108,22 +101,17 @@ void startGame(char game[3][3], const char player1, const char player2)
         return;
     }
 
-    srand((unsigned)time(NULL));
     do
     {
-        compChoice = rand() % 11;
+        printf("Player 2's turn : ");
+        scanf(" %c", &choice);
 
-    }while((compChoice > 9 || compChoice < 1) || !validPos[compChoice]);
-
-    printf("%d\n", compChoice);
-    compChoice = goodMove(game, compChoice);
-    printf("%d\n", compChoice);
-    validPos[compChoice] = false;
+    }while(!isdigit(choice));
 
     // Assigns either X or O to the spot where the player 2 wants to mark.
     for(int i = 0; i < 3; i++)
         for(int j = 0; j < 3; j++)
-            if(game[i][j] - '0' == compChoice)
+            if(game[i][j] == choice)
                 game[i][j] = player2;
 
     display(game);
@@ -132,7 +120,7 @@ void startGame(char game[3][3], const char player1, const char player2)
     // also acts as the base case for the game to end.
     if(gameStatus(game))
     {
-        printf("computer Wins !\n");
+        printf("Player 2 Wins !\n");
         return;
     }
 
@@ -165,11 +153,13 @@ bool gameStatus(char game[][3])
             return true;
 
     // checks along right diagonal.
-    if(game[0][0] == game[1][1] && game[0][0] == game[2][2])
+    for(i = 0, j = 0; i < 2; i++)
+        if(game[i][j] == game[i + 1][j + 1] && game[i][j] == game[i + 2][j + 2])
             return true;
 
     // checks along left diagonal.
-    if(game[0][2] == game[1][1] && game[0][2] == game[2][0])
+    for(i = 0, j = 2; i < 2; i++)
+        if(game[i][j] == game[i + 1][j - 1] && game[i][j] == game[i + 2][j - 2])
             return true;
 
     return false;
@@ -184,86 +174,4 @@ bool checkGame(char game[][3])
                 return false;
 
     return true;
-}
-
-int goodMove(char game[][3], int choice)
-{
-    if(flag == 0)
-    {
-        if(validPos[5])
-        {
-            flag = 1;
-            return 5;
-        }
-
-        if(validPos[1])
-        {
-            flag = 1;
-            return 1;
-        }
-
-        if(validPos[3])
-        {
-            flag = 1;
-            return 3;
-        }
-
-        if(validPos[7])
-        {
-            flag = 1;
-            return 7;
-        }
-
-        if(validPos[9])
-        {
-            flag = 1;
-            return 9;
-        }
-    }
-
-    int i, j;
-
-    for(i = 0; i < 3; i++)
-    {
-        if(game[i][0] == game[i][1] && validPos[game[i][2] - '0'])
-            return game[i][2] - '0';
-
-        if(game[i][0] == game[i][2] && validPos[game[i][1] - '0'])
-            return game[i][1] - '0';
-
-        if(game[i][1] == game[i][2] && validPos[game[i][0] - '0'])
-            return game[i][0] - '0';
-    }
-
-    for(j = 0; j < 3; j++)
-    {
-        if(game[0][j] == game[1][j] && validPos[game[2][j] - '0'])
-            return game[2][j] - '0';
-
-        if(game[1][j] == game[2][j] && validPos[game[0][j] - '0'])
-            return game[0][j] - '0';
-
-        if(game[0][j] == game[2][j] && validPos[game[1][j] - '0'])
-            return game[1][j] - '0';
-    }
-
-    if(game[0][0] == game[1][1] && validPos[game[2][2] - '0'])
-        return game[2][2] - '0';
-
-    if(game[0][0] == game[2][2] && validPos[game[1][1] - '0'])
-        return game[1][1] - '0';
-
-    if(game[1][1] == game[2][2] && validPos[game[0][0] - '0'])
-        return game[0][0] - '0';
-
-    if(game[0][2] == game[1][1] && validPos[game[2][0] - '0'])
-        return game[2][0] - '0';
-
-    if(game[0][2] == game[2][0] && validPos[game[1][1] - '0'])
-        return game[1][1] - '0';
-
-    if(game[1][1] == game[2][0] && validPos[game[0][2] - '0'])
-        return game[0][2] - '0';
-
-    return choice;
 }
