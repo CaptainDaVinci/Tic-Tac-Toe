@@ -15,6 +15,7 @@ bool gameStatus(char [][3]);
 void startGame(char [][3], const char, const char);
 int goodMove(char [][3], int, char);
 
+// keeps track of all the valid positions.
 bool validPos[10] = {false, true, true, true, true, true, true, true, true, true};
 
 int main(void)
@@ -24,6 +25,7 @@ int main(void)
     char user = 'O', computer = 'X';
     char choice;
 
+    // Asks user for a valid input.
     do
     {
         printf("X or O ?\n");
@@ -31,7 +33,7 @@ int main(void)
 
     }while(choice != 'X' && choice != 'O' && choice != 'x' && choice != 'o');
 
-    // assigns X or O to the two players.
+    // assigns X or O to the player.
     if(choice == 'x' || choice == 'X')
     {
         user = 'X';
@@ -46,7 +48,7 @@ int main(void)
     startGame(game, user, computer);
 }
 
-// displays the game's current status.
+// displays the game.
 void display(char game[][3])
 {
     system("clear");
@@ -73,26 +75,29 @@ void display(char game[][3])
 void startGame(char game[3][3], const char user, const char computer)
 {
     int i, j;
-    int choice;
+    int pos;
 
+    // asks user for a valid input.
     do
     {
         printf("Your turn : ");
-        scanf("%d", &choice);
+        scanf("%d", &pos);
 
-    }while((choice > 9 || choice < 1) || !validPos[choice]);
+    }while((pos > 9 || pos < 1) || !validPos[pos]);
 
-    validPos[choice] = false;
+    // makes that position invalid.
+    validPos[pos] = false;
 
-    // Assigns either X or O to the spot where the Your turn wants to mark.
+    // Assigns 'X' or 'O' to the chosen position.
     for( i = 0; i < 3; i++)
         for( j = 0; j < 3; j++)
-            if(game[i][j] - '0' == choice)
+            if(game[i][j] - '0' == pos)
                 game[i][j] = user;
 
+    // prints the game onto the screen.
     display(game);
 
-    // checks if the Your turn has won the game or not.
+    // checks if the plater has won the game or not.
     // also acts as the base case for the game to end.
     if(gameStatus(game))
     {
@@ -108,25 +113,26 @@ void startGame(char game[3][3], const char user, const char computer)
         return;
     }
 
+    // seed for the random number.
     srand((unsigned)time(NULL));
     do
     {
-        choice = rand() % 11;
+        // calculates a good and valid move for the computer.
+        pos = goodMove(game, pos, computer);
 
-    }while((choice > 9 || choice < 1) || !validPos[choice]);
+    }while((pos > 9 || pos < 1) || !validPos[pos]);
 
-    choice = goodMove(game, choice, computer);
-    validPos[choice] = false;
+    validPos[pos] = false;
 
     // Assigns either X or O to the spot where the player 2 wants to mark.
     for( i = 0; i < 3; i++)
         for( j = 0; j < 3; j++)
-            if(game[i][j] - '0' == choice)
+            if(game[i][j] - '0' == pos)
                 game[i][j] = computer;
 
     display(game);
 
-    // checks if the player 2 has won the game or not.
+    // checks if the computer has won the game or not.
     // also acts as the base case for the game to end.
     if(gameStatus(game))
     {
@@ -185,7 +191,7 @@ bool isComplete(char game[][3])
     return true;
 }
 
-int goodMove(char game[][3], int choice, char computer)
+int goodMove(char game[][3], int pos, char computer)
 {
     int i, j;
     int move = 0;
@@ -300,6 +306,6 @@ int goodMove(char game[][3], int choice, char computer)
         case 4 : if(validPos[5])
                     return 5;
 
-        default : return choice;
+        default : return pos;
     }
 }
