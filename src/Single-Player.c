@@ -112,6 +112,7 @@ void startGame(char game[3][3], const char turn)
     display(game);
 
     // checks if the player or computer has won or not.
+    // Also checks if there are any further moves possible.
     if(gameStatus(game))
     {
         if(turn == user)
@@ -120,14 +121,6 @@ void startGame(char game[3][3], const char turn)
         else
             printf("Computer Wins !\n");
 
-        return;
-    }
-
-    // checks if there are any further moves possible.
-    // also acts as the base case for the game to end.
-    if(isComplete(game))
-    {
-        printf("Game Over!\nNo More Possible Moves\n");
         return;
     }
 
@@ -144,7 +137,25 @@ void startGame(char game[3][3], const char turn)
 bool gameStatus(char game[][3])
 {
     int i, j;
+    int flag = 0;
 
+    // checks if there are any further possible moves.
+    for(i = 1; i < 10; i++)
+    {
+        if(validPos[i])
+        {
+            flag = 1;
+            break;
+        }
+    }
+
+    // if there are no more possible moves then the game is over.
+    if(flag == 0)
+    {
+        printf("Game Over!\nNo more possible moves\n");
+        exit(0);
+    }
+    
     // checks along a row.
     for(i = 0, j = 0; i < 3; i++)
         if(game[i][j] == game[i][j + 1] && game[i][j] == game[i][j + 2])
@@ -164,18 +175,6 @@ bool gameStatus(char game[][3])
             return true;
 
     return false;
-}
-
-// checks if there are any further moves possible.
-bool isComplete(char game[][3])
-{
-    int i, j;
-    for( i = 0; i < 3; i++)
-        for( j = 0; j < 3; j++)
-            if(game[i][j] != 'X' && game[i][j] != 'O')
-                return false;
-
-    return true;
 }
 
 int calcMove(char game[][3], int pos, char computer)
