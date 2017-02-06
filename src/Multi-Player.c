@@ -11,16 +11,16 @@
 void display(char [][3]);
 bool isComplete(char [][3]);
 bool gameStatus(char [][3]);
-void startGame(char [][3], const char, const char);
+void startGame(char [][3], const char);
 
 // keeps track of all the valid positions left in the game.
 bool validPos[10] = {false, true, true, true, true, true, true, true, true, true};
+char player1 = 'O', player2 = 'X';
 
 int main(void)
 {
     // A two-dimensional array depicting the game.
     char game[3][3] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
-    char player1 = 'O', player2 = 'X';
     char choice;
 
     do
@@ -42,7 +42,7 @@ int main(void)
     printf("Player 1 - %c\n", player1);
     printf("Player 2 - %c\n", player2);
 
-    startGame(game, player1, player2);
+    startGame(game, player1);
 }
 
 // displays the game's current status.
@@ -71,36 +71,41 @@ void display(char game[][3])
     }
 }
 
-void startGame(char game[3][3], const char player1, const char player2)
+void startGame(char game[3][3], const char turn)
 {
     int i, j;
     char choice;
 
-    do
+    if(turn == player1)
     {
-        printf("Player 1's turn : ");
-        scanf(" %c", &choice);
+        do
+        {
+            printf("Player 1's turn : ");
+            scanf(" %c", &choice);
 
-    }while(!isdigit(choice) || !validPos[choice - '0']);
+        }while(!isdigit(choice) || !validPos[choice - '0']);
+    }
+
+    else
+    {
+        do
+        {
+            printf("Player 2's turn : ");
+            scanf(" %c", &choice);
+
+        }while(!isdigit(choice) || !validPos[choice - '0']);
+
+    }
 
     validPos[choice - '0'] = false;
 
-    // Assigns either X or O to the spot where the player 1 wants to mark.
+    // Assigns either X or O to the spot chosen.
     for(i = 0; i < 3; i++)
         for(j = 0; j < 3; j++)
             if(game[i][j] == choice)
-                game[i][j] = player1;
+                game[i][j] = turn;
 
     display(game);
-
-
-    // checks if the player 1 has won the game or not.
-    // also acts as the base case for the game to end.
-    if(gameStatus(game))
-    {
-        printf("Player 1 Wins !\n");
-        return;
-    }
 
     // checks if there are any further moves possible.
     // also acts as the base case for the game to end.
@@ -110,41 +115,26 @@ void startGame(char game[3][3], const char player1, const char player2)
         return;
     }
 
-    do
-    {
-        printf("Player 2's turn : ");
-        scanf(" %c", &choice);
-
-    }while(!isdigit(choice) || !validPos[choice - '0']);
-
-    validPos[choice - '0'] = false;
-
-    // Assigns either X or O to the spot where the player 2 wants to mark.
-    for(i = 0; i < 3; i++)
-        for(j = 0; j < 3; j++)
-            if(game[i][j] == choice)
-                game[i][j] = player2;
-
-    display(game);
-
-    // checks if the player 2 has won the game or not.
+    // checks if the player 1 has won the game or not.
     // also acts as the base case for the game to end.
     if(gameStatus(game))
     {
-        printf("Player 2 Wins !\n");
+        if(turn == player1)
+            printf("Player 1 Wins !\n");
+
+        else
+            printf("Player 2 Wins !\n");
+
         return;
     }
 
-    // checks if the game has any possible moves that can be played.
-    // also acts as the base case for the game to end.
-    if(isComplete(game))
-    {
-        printf("Game Over!\nNo More Possible Moves\n");
-        return;
-    }
 
     // recursive call to continue the game.
-    startGame(game, player1, player2);
+    if(turn == player1)
+        startGame(game, player2);
+
+    else
+        startGame(game, player1);
 }
 
 // checks if the game is completed when there are 3 consecutive X or O

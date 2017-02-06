@@ -12,17 +12,17 @@
 void display(char [][3]);
 bool isComplete(char [][3]);
 bool gameStatus(char [][3]);
-void startGame(char [][3], const char, const char);
-int goodMove(char [][3], int, char);
+void startGame(char [][3], const char);
+int calcMove(char [][3], int, char);
 
 // keeps track of all the valid positions.
 bool validPos[10] = {false, true, true, true, true, true, true, true, true, true};
+char user = 'O', computer = 'X';
 
 int main(void)
 {
     // A two-dimensional array depicting the game.
     char game[3][3] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
-    char user = 'O', computer = 'X';
     char choice;
 
     // Asks user for a valid input.
@@ -45,7 +45,7 @@ int main(void)
     printf("You - %c\n", user);
     printf("Computer - %c\n", computer);
 
-    startGame(game, user, computer);
+    startGame(game, user);
 }
 
 // displays the game.
@@ -72,36 +72,54 @@ void display(char game[][3])
     }
 }
 
-void startGame(char game[3][3], const char user, const char computer)
+void startGame(char game[3][3], const char turn)
 {
     int i, j;
     int pos;
 
-    // asks user for a valid input.
-    do
+    srand((unsigned)time(NULL));
+    if(turn == user)
     {
-        printf("Your turn : ");
-        scanf("%d", &pos);
+        // asks user for a valid input.
+        do
+        {
+            printf("Your turn : ");
+            scanf("%d", &pos);
 
-    }while((pos > 9 || pos < 1) || !validPos[pos]);
+        }while((pos > 9 || pos < 1) || !validPos[pos]);
+    }
 
-    // makes that position invalid.
+    else
+    {
+        do
+        {
+            // calculates a good and valid move for the computer.
+            pos = rand() % 10;
+        }while((pos > 9 || pos < 1) || !validPos[pos]);
+        pos = calcMove(game, pos, computer);
+    }
+
+    // makes the position chosen invalid.
     validPos[pos] = false;
 
     // Assigns 'X' or 'O' to the chosen position.
     for( i = 0; i < 3; i++)
         for( j = 0; j < 3; j++)
             if(game[i][j] - '0' == pos)
-                game[i][j] = user;
+                game[i][j] = turn;
 
     // prints the game onto the screen.
     display(game);
 
-    // checks if the plater has won the game or not.
-    // also acts as the base case for the game to end.
+    // checks if the player or computer has won or not.
     if(gameStatus(game))
     {
-        printf("You Win !\n");
+        if(turn == user)
+            printf("You Win !\n");
+
+        else
+            printf("Computer Wins !\n");
+
         return;
     }
 
@@ -113,43 +131,12 @@ void startGame(char game[3][3], const char user, const char computer)
         return;
     }
 
-    // seed for the random number.
-    srand((unsigned)time(NULL));
-    do
-    {
-        // calculates a good and valid move for the computer.
-        pos = goodMove(game, pos, computer);
-
-    }while((pos > 9 || pos < 1) || !validPos[pos]);
-
-    validPos[pos] = false;
-
-    // Assigns either X or O to the spot where the player 2 wants to mark.
-    for( i = 0; i < 3; i++)
-        for( j = 0; j < 3; j++)
-            if(game[i][j] - '0' == pos)
-                game[i][j] = computer;
-
-    display(game);
-
-    // checks if the computer has won the game or not.
-    // also acts as the base case for the game to end.
-    if(gameStatus(game))
-    {
-        printf("computer Wins !\n");
-        return;
-    }
-
-    // checks if the game has any possible moves that can be played.
-    // also acts as the base case for the game to end.
-    if(isComplete(game))
-    {
-        printf("Game Over!\nNo More Possible Moves\n");
-        return;
-    }
-
     // recursive call to continue the game.
-    startGame(game, user, computer);
+    if(turn == user)
+        startGame(game, computer);
+
+    if(turn == computer)
+        startGame(game, user);
 }
 
 // checks if the game is completed when there are 3 consecutive X or O
@@ -191,11 +178,13 @@ bool isComplete(char game[][3])
     return true;
 }
 
-int goodMove(char game[][3], int pos, char computer)
+int calcMove(char game[][3], int pos, char computer)
 {
     int i, j;
     int move = 0;
 
+    // If there is any move along a row that is a winning move for the computer
+    // then take it or block the winning move of the user(if any) along a row.
     for(i = 0; i < 3; i++)
     {
         if(game[i][0] == game[i][1] && validPos[game[i][2] - '0'])
@@ -220,6 +209,8 @@ int goodMove(char game[][3], int pos, char computer)
         }
     }
 
+    // If there is any move along a coloumn that is a winning move for the computer
+    // then take it or block the winning move of the user(if any) along a coloumn.
     for(j = 0; j < 3; j++)
     {
         if(game[0][j] == game[1][j] && validPos[game[2][j] - '0'])
@@ -244,6 +235,8 @@ int goodMove(char game[][3], int pos, char computer)
         }
     }
 
+    // checks for a winning move along the right diagonal.
+    // preferance is given to winning move for computer.
     if(game[0][0] == game[1][1] && validPos[game[2][2] - '0'])
     {
         move = game[2][2] - '0';
@@ -265,6 +258,8 @@ int goodMove(char game[][3], int pos, char computer)
             return move;
     }
 
+    // checks for a winning move along the left diagonal.
+    // preferance is given to winning move for computer.
     if(game[0][2] == game[1][1] && validPos[game[2][0] - '0'])
     {
         move = game[2][0] - '0';
@@ -286,13 +281,15 @@ int goodMove(char game[][3], int pos, char computer)
             return move;
     }
 
+    // if there was any such move in which either the player or
+    // the computer would win, then return it.
     if(move != 0)
         return move;
 
-    switch(rand() % 6)
+    // if there was no such move, then select either or the corners
+    // or the center randomly.
+    switch(rand() % 4)
     {
-        case 0 : if(validPos[5])
-                    return 5;
 
         case 1 : if(validPos[7] && validPos[3])
                     return 7;
