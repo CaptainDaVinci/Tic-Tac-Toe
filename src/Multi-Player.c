@@ -4,6 +4,8 @@
 #include <ctype.h>
 
 #define GAMES 3
+#define WIN 2
+#define LOSS -1
 
 // Adds colour to the output.
 #define ANSI_COLOR_RED     "\x1b[31m"
@@ -151,13 +153,15 @@ void startGame(char game[3][3])
         if(player1.turn)
         {
             printf("\n%s WINS !\n", player1.name);
-            player1.score[games] = 1;
+            player1.score[games] = WIN;
+            player2.score[games] = LOSS;
         }
 
         else
         {
             printf("\n%s WINS !\n", player2.name);
-            player2.score[games] = 1;
+            player2.score[games] = WIN;
+            player1.score[games] = LOSS;
         }
 
         scoreBoard();
@@ -281,17 +285,22 @@ void scoreBoard(void)
 
     for(i = 0; i < games; i++)
     {
-        if(player1.score[i] == 1)
-            printf(ANSI_COLOR_GREEN "   1" ANSI_COLOR_RESET "\t");
+        if(player1.score[i] == WIN)
+            printf(ANSI_COLOR_GREEN "  %d", WIN);
 
         else
-            printf(ANSI_COLOR_RED "   0" ANSI_COLOR_RESET "\t");
+            printf(ANSI_COLOR_RED "  0");
 
-        if(player2.score[i] == 1)
-            printf(ANSI_COLOR_GREEN "   1" ANSI_COLOR_RESET "\n");
+        printf(ANSI_COLOR_RESET "\t");
+
+        if(player2.score[i] == WIN)
+            printf(ANSI_COLOR_GREEN "   %d", WIN);
+
 
         else
-            printf(ANSI_COLOR_RED "   0" ANSI_COLOR_RESET "\n");
+            printf(ANSI_COLOR_RED "   0");
+
+        printf(ANSI_COLOR_RESET "\n");
     }
 
     printf("\n");
