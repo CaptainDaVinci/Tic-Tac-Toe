@@ -289,7 +289,7 @@ void scoreBoard(void)
             printf(ANSI_COLOR_GREEN "  %d", WIN);
 
         else
-            printf(ANSI_COLOR_RED "  0");
+            printf(ANSI_COLOR_RED "  %d", LOSS);
 
         printf(ANSI_COLOR_RESET "\t");
 
@@ -298,7 +298,7 @@ void scoreBoard(void)
 
 
         else
-            printf(ANSI_COLOR_RED "   0");
+            printf(ANSI_COLOR_RED "   %d", LOSS);
 
         printf(ANSI_COLOR_RESET "\n");
     }
