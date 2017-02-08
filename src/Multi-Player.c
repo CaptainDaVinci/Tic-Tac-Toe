@@ -37,7 +37,6 @@ void display(Game *, Player *, Player *);
 bool victoryCheck(Game *);
 bool isComplete(Game *);
 void playerMove(Game *, Player *);
-void declareWinner(Game *, Player *, Player *);
 void gameReset(Game *);
 void scoreBoard(Player *, Player *, int);
 
@@ -54,9 +53,9 @@ int main(void)
     assignXO(player_1, player_2);
     startGame(game, player_1, player_2);
 
-    // continues to ask user if he/she wants to play one more game
-    // until the maximum game count is reached. This can act as a series, so
-    // that final winner is decided based on the number of matche won out of the
+    // asks user if he/she wants to play another game
+    // until the maximum game count is reached. This act as a series of game
+    // so that final winner is decided based on the number of matche won out of the
     // number of  GAMES played.
     while(game->games < GAMES)
     {
@@ -66,6 +65,8 @@ int main(void)
         // if yes then start the game again with a fresh board.
         if(choice == 'y' || choice == 'Y')
         {
+            player_1->turn = !player_1->turn;
+            player_2->turn = !player_2->turn;
             startGame(game, player_1, player_2);
         }
 
@@ -140,27 +141,52 @@ void startGame(Game *game, Player *player_1, Player *player_2)
     display(game, player_1, player_2);
 
     // continue the game till either player wins or no more moves are possible.
-    while(!victoryCheck(game) && !isComplete(game))
+    while(true)
     {
-        // player_1 makes a move if it is his/her turn.
+        // players make a move depending on whose turn it is.
+
         if(player_1->turn)
             playerMove(game, player_1);
-
-        // player_2 makes a move if it is his/her turn.
         else
             playerMove(game, player_2);
+
+        display(game, player_1, player_2);
+
+        // check if the move played resulted in a win.
+        // declare winner according to the previous turn.
+        if(victoryCheck(game))
+        {
+            if(player_1->turn)
+            {
+                printf("\n%s Wins!!!", player_1->name);
+                player_1->score[game->games] = WIN;
+                player_2->score[game->games] = LOSS;
+            }
+            else
+            {
+                printf("\n%s Wins!!!", player_2->name);
+                player_2->score[game->games] = WIN;
+                player_1->score[game->games] = LOSS;
+            }
+            break;
+        }
+
+        // check if there are any further possible moves.
+        if(isComplete(game))
+        {
+            printf("Game Over!\nNo more possible moves\n");
+            player_1->score[game->games] = DRAW;
+            player_2->score[game->games] = DRAW;
+            break;
+        }
 
         // swap the turns.
         player_1->turn = !player_1->turn;
         player_2->turn = !player_2->turn;
-
-        display(game, player_1, player_2);
     }
 
-    // once the game is completed declare the winner, if any.
-    declareWinner(game, player_1, player_2);
-
     // display the scoreboard after every game.
+    game->games++;
     scoreBoard(player_1, player_2, game->games);
 }
 
@@ -227,118 +253,6 @@ bool isComplete(Game *game)
     }
 
     return true;
-}
-
-void declareWinner(Game *game, Player *player_1, Player *player_2)
-{
-    int i, j;
-
-    // checks for a winner along a row.
-    for(i = 0, j = 0; i < 3; i++)
-    {
-        if(game->board[i][0] == game->board[i][1] && game->board[i][0] == game->board[i][2])
-        {
-            // if winner is player_1.
-            if(game->board[i][j] == player_1->choice)
-            {
-                printf("%s Wins!\n", player_1->name);
-                player_1->score[game->games] = WIN;
-                player_2->score[game->games] = LOSS;
-            }
-
-            // if winner is player_2.
-            else
-            {
-                printf("%s Wins!\n", player_2->name);
-                player_2->score[game->games] = WIN;
-                player_1->score[game->games] = LOSS;
-            }
-
-            game->games++;
-            return;
-        }
-    }
-
-    // checks for a winner along a coloumn.
-    for(j = 0, i = 0; j < 3; j++)
-    {
-        if(game->board[0][j] == game->board[1][j] && game->board[0][j] == game->board[2][j])
-        {
-            // if winner is player_1.
-            if(game->board[0][j] == player_1->choice)
-            {
-                printf("%s Wins!\n", player_1->name);
-                player_1->score[game->games] = WIN;
-                player_2->score[game->games] = LOSS;
-            }
-
-            // if winner is player_2.
-            else
-            {
-                printf("%s Wins!\n", player_2->name);
-                player_2->score[game->games] = WIN;
-                player_1->score[game->games] = LOSS;
-            }
-
-            game->games++;
-            return;
-        }
-    }
-
-    // checks along right diagonal.
-    if(game->board[0][0] == game->board[1][1] && game->board[0][0] == game->board[2][2])
-    {
-        // if winner is player_1.
-        if(game->board[0][0] == player_1->choice)
-        {
-            printf("%s Wins!\n", player_1->name);
-            player_1->score[game->games] = WIN;
-            player_2->score[game->games] = LOSS;
-        }
-
-        // if winner is player_2.
-        else
-        {
-            printf("%s Wins!\n", player_2->name);
-            player_2->score[game->games] = WIN;
-            player_1->score[game->games] = LOSS;
-        }
-        game->games++;
-        return;
-    }
-
-    // checks along left diagonal.
-    if(game->board[0][2] == game->board[1][1] && game->board[0][2] == game->board[2][0])
-    {
-        if(game->board[0][2] == player_1->choice)
-        {
-            printf("%s Wins!\n", player_1->name);
-            player_1->score[game->games] = WIN;
-            player_2->score[game->games] = LOSS;
-        }
-
-        else
-        {
-            printf("%s Wins!\n", player_2->name);
-            player_2->score[game->games] = WIN;
-            player_1->score[game->games] = LOSS;
-        }
-        game->games++;
-        return;
-    }
-
-    // if there were no winners then the result was a draw.
-    if(isComplete(game))
-    {
-        printf("Game Over !\n");
-        printf("No more possible moves\n");
-
-        player_1->score[game->games] = DRAW;
-        player_2->score[game->games] = DRAW;
-
-        game->games++;
-        return ;
-    }
 }
 
 // displays the game's current status.
