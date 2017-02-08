@@ -12,11 +12,9 @@
 typedef struct
 {
     char board[3][3];
-    char user;
-    char comp;
     bool validPos[10];
-    bool userTurn;
-    bool compTurn;
+    char user, comp;
+    bool userTurn, compTurn;
 
 }Game;
 
