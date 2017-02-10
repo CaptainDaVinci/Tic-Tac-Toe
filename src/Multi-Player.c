@@ -27,28 +27,28 @@ typedef struct
 {
     char board[3][3];
     bool validPos[10];
-    int games;
+    int rounds;
 
 }Game;
 
-void assignXO(Player *, Player *);
-void startGame(Game *, Player *, Player *);
-void display(Game *, Player *, Player *);
-bool victoryCheck(Game *);
-bool isComplete(Game *);
-void playerMove(Game *, Player *);
-void gameReset(Game *);
-void scoreBoard(Player *, Player *, int);
+void assignXO(Player *player_1, Player *player_2);
+void startGame(Game *game, Player *player_1, Player *player_2);
+void display(Game *game, Player *player_1, Player *player_2);
+bool victoryCheck(Game *game);
+bool isComplete(Game *game);
+void playerMove(Game *game, Player *player);
+void gameReset(Game *game);
+void scoreBoard(Player *player_1, Player *player_2, int rounds);
 
 int main(void)
 {
     char choice;
-    Game *game = malloc(sizeof(Game));
-    Player *player_1 = malloc(sizeof(Player));
-    Player *player_2 = malloc(sizeof(Player));
+    Game *game = malloc(sizeof( *game));
+    Player *player_1 = malloc(sizeof( *player_1));
+    Player *player_2 = malloc(sizeof( *player_2));
 
     // sets the number of games played to zero.
-    game->games = 0;
+    game->rounds = 0;
 
     assignXO(player_1, player_2);
     startGame(game, player_1, player_2);
@@ -57,7 +57,7 @@ int main(void)
     // until the maximum game count is reached. This act as a series of game
     // so that final winner is decided based on the number of matche won out of the
     // number of  GAMES played.
-    while(game->games < GAMES)
+    while(game->rounds < GAMES)
     {
         printf("Play again ? (Y/N)\n");
         if(scanf(" %c", &choice) == 1);
@@ -159,14 +159,14 @@ void startGame(Game *game, Player *player_1, Player *player_2)
             if(player_1->turn)
             {
                 printf("\n%s Wins!!!", player_1->name);
-                player_1->score[game->games] = WIN;
-                player_2->score[game->games] = LOSS;
+                player_1->score[game->rounds] = WIN;
+                player_2->score[game->rounds] = LOSS;
             }
             else
             {
                 printf("\n%s Wins!!!", player_2->name);
-                player_2->score[game->games] = WIN;
-                player_1->score[game->games] = LOSS;
+                player_2->score[game->rounds] = WIN;
+                player_1->score[game->rounds] = LOSS;
             }
             break;
         }
@@ -175,8 +175,8 @@ void startGame(Game *game, Player *player_1, Player *player_2)
         if(isComplete(game))
         {
             printf("Game Over!\nNo more possible moves\n");
-            player_1->score[game->games] = DRAW;
-            player_2->score[game->games] = DRAW;
+            player_1->score[game->rounds] = DRAW;
+            player_2->score[game->rounds] = DRAW;
             break;
         }
 
@@ -186,8 +186,8 @@ void startGame(Game *game, Player *player_1, Player *player_2)
     }
 
     // display the scoreboard after every game.
-    game->games++;
-    scoreBoard(player_1, player_2, game->games);
+    game->rounds++;
+    scoreBoard(player_1, player_2, game->rounds);
 }
 
 // stored and checks the move of each player.
@@ -303,7 +303,7 @@ void gameReset(Game *game)
 }
 
 // display and calculate the score board.
-void scoreBoard(Player *player_1, Player *player_2, int games)
+void scoreBoard(Player *player_1, Player *player_2, int rounds)
 {
     int i;
     int totalScore1 = 0;
@@ -312,11 +312,11 @@ void scoreBoard(Player *player_1, Player *player_2, int games)
     printf("\n==================\n");
     printf("   LEADERBOARD\n\n");
     // printf("==================\n");
-    printf("   Game (%d / %d)\n", games, GAMES);
+    printf("   Game (%d / %d)\n", rounds, GAMES);
     printf("==================\n");
 
     // caculate the score for each player.
-    for(i = 0; i < games; i++)
+    for(i = 0; i < rounds; i++)
     {
         totalScore1 += player_1->score[i];
         totalScore2 += player_2->score[i];
@@ -326,7 +326,7 @@ void scoreBoard(Player *player_1, Player *player_2, int games)
     printf("%s[%d]  %s[%d]\n\n", player_1->name, totalScore1, player_2->name, totalScore2);
 
     // display the score on the screen with colour.
-    for(i = 0; i < games; i++)
+    for(i = 0; i < rounds; i++)
     {
         if(player_1->score[i] == WIN)
         {
@@ -351,7 +351,7 @@ void scoreBoard(Player *player_1, Player *player_2, int games)
     //  display the series result.
     printf("==================\n");
     printf("\n");
-    if(games == GAMES)
+    if(rounds == GAMES)
     {
         if(totalScore1 > totalScore2)
             printf("%s WINS THE SERIES !\n", player_1->name);

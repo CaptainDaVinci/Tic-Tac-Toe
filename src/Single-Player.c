@@ -18,20 +18,20 @@ typedef struct
 
 }Game;
 
-void display(Game *);
-void assignXO(Game *);
-void userMove(Game *);
-void compMove(Game *);
-bool isComplete(Game *);
-bool victoryCheck(Game *);
-void startGame(Game *);
-int calcMove(Game *, int);
-void gameSetup(Game *);
+void display(Game *game);
+void assignXO(Game *game);
+void userMove(Game *game);
+void compMove(Game *game);
+bool isComplete(Game *game);
+bool victoryCheck(Game *game);
+void startGame(Game *game);
+int calcMove(Game *game, int position);
+void gameSetup(Game *game);
 
 int main(void)
 {
 
-    Game *game = malloc(sizeof(Game));
+    Game *game = malloc(sizeof( *game));
     srand((unsigned)time(NULL));
 
     gameSetup(game);
@@ -96,7 +96,7 @@ void display(Game *game)
         printf("\n\t------------------\n");
     }
 
-    printf("\nYou - %c\t", game->user);
+    printf("\nYou - %c\t\t", game->user);
     printf("Computer - %c\n", game->comp);
 }
 
