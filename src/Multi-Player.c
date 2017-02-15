@@ -4,10 +4,7 @@
 #include <ctype.h>
 
 // points for each result.
-#define WIN     2
-#define LOSS   -1
-#define DRAW    0
-#define GAMES   3
+enum Result {WIN = 2, LOSS = -1, DRAW = 0, GAMES = 3};
 
 // Adds colour to the output.
 #define ANSI_COLOR_RED     "\x1b[31m"
@@ -244,7 +241,7 @@ bool victoryCheck(Game *game)
 // checks if there are any futher possible moves.
 bool isComplete(Game *game)
 {
-    int i, j;
+    int i;
 
     for(i = 1; i < 10; i++)
     {
@@ -293,13 +290,8 @@ void gameReset(Game *game)
         game->validPos[i] = true;
 
     for(i = 0; i < 3; i++)
-    {
         for(j = 0; j < 3; j++)
-        {
-            game->board[i][j] = k;
-            k++;
-        }
-    }
+            game->board[i][j] = k++;
 }
 
 // display and calculate the score board.
