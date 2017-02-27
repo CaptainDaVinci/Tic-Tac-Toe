@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <ctype.h>
+#include <unistd.h>
 
 // points for each result.
 enum Result {WIN = 2, LOSS = -1, DRAW = 0, GAMES = 3};
@@ -10,6 +11,11 @@ enum Result {WIN = 2, LOSS = -1, DRAW = 0, GAMES = 3};
 #define RED     "\x1b[31m"
 #define GREEN   "\x1b[32m"
 #define RESET   "\x1b[0m"
+
+// replace "clear" by "cls" on windows.
+#define CLEAR "clear"
+
+bool useColour = 1;
 
 typedef struct
 {
@@ -36,6 +42,7 @@ bool isComplete(Game *game);
 void move(Game *game, Player *player);
 void reset(Game *game);
 void scoreBoard(Player *player_1, Player *player_2, int rounds);
+void loadingScreen(void);
 
 int main(void)
 {
@@ -47,6 +54,11 @@ int main(void)
     // sets the number of games played to zero.
     game->rounds = 0;
 
+    printf("Do you want to use colour in the output? (y/n): ");
+    if((choice = getchar()) == 'n' || choice == 'N')
+        useColour = false;
+
+    loadingScreen();
     assignXO(player_1, player_2);
     startGame(game, player_1, player_2);
 
@@ -162,7 +174,7 @@ void startGame(Game *game, Player *player_1, Player *player_2)
                 player_1->score[game->rounds] = LOSS;
                 player_2->score[game->rounds] = WIN;
             }
-            
+
             break;
         }
 
@@ -252,8 +264,7 @@ void display(Game *game, Player *player_1, Player * player_2)
 {
     int i, j;
 
-    // use system("cls"); if using windows.
-    system("clear");
+    system(CLEAR);
     printf("\n");
 
     for(i = 0; i < 3; i++)
@@ -262,13 +273,30 @@ void display(Game *game, Player *player_1, Player * player_2)
         for(j = 0; j < 3; j++)
         {
             if(game->board[i][j] == 'X')
-                printf(RED " X " RESET);
+            {
+                if(useColour)
+                    printf(RED);
+
+                printf(" X ");
+            }
 
             else if(game->board[i][j] == 'O')
-                printf(GREEN " O " RESET);
+            {
+                if(useColour)
+                    printf(GREEN);
+
+                printf(" O ");
+            }
 
             else
+            {
+                if(useColour)
+                    printf(RESET);
                 printf(" %c ", game->board[i][j]);
+            }
+
+            if(useColour)
+                printf(RESET);
 
             if(j != 2)
                 printf("|");
@@ -305,7 +333,6 @@ void scoreBoard(Player *player_1, Player *player_2, int rounds)
 
     printf("\n==================\n");
     printf("   LEADERBOARD\n\n");
-    // printf("==================\n");
     printf("   Game (%d / %d)\n", rounds, GAMES);
     printf("==================\n");
 
@@ -324,16 +351,32 @@ void scoreBoard(Player *player_1, Player *player_2, int rounds)
     {
         if(player_1->score[i] == WIN)
         {
-            printf(GREEN "  %2d", WIN);
-            printf(RESET "\t");
-            printf(RED "  %2d", LOSS);
+            if(useColour)
+                printf(GREEN);
+            printf("  %2d", WIN);
+
+            if(useColour)
+                printf(RESET);
+            printf("\t");
+
+            if(useColour)
+                printf(RED);
+            printf("  %2d", LOSS);
         }
 
         else if (player_1->score[i] == LOSS)
         {
-            printf(RED "  %2d", LOSS);
-            printf(RESET "\t");
-            printf(GREEN "  %2d", WIN);
+            if(useColour)
+                printf(RED);
+            printf("  %2d", LOSS);
+
+            if(useColour)
+                printf(RESET);
+            printf("\t");
+
+            if(useColour)
+                printf(GREEN);
+            printf("  %2d", WIN);
         }
 
         else
@@ -356,4 +399,49 @@ void scoreBoard(Player *player_1, Player *player_2, int rounds)
         else
             printf("NO RESULT!\n");
     }
+}
+
+void loadingScreen(void)
+{
+    int i;
+    char load[26];
+
+    for(i = 0; i < 25;)
+    {
+        system(CLEAR);
+        load[i++] = '#';
+        load[i] = '\0';
+
+        if(i == 25)
+        {
+            if(useColour)
+                printf(GREEN);
+            printf("\n\nLOADING [%-25s]\n", load);
+
+            if(useColour)
+                printf(RESET);
+            break;
+        }
+
+        else
+        {
+            printf("\n\nLOADING ");
+            if(useColour)
+                printf(RED);
+
+            printf("[%-25s]", load);
+
+        }
+
+        if(useColour)
+            printf(RESET);
+
+        printf("\n");
+
+        usleep(199900);
+    }
+
+    sleep(1);
+    system(CLEAR);
+    printf("Game Loaded!\n");
 }
