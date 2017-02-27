@@ -441,7 +441,6 @@ void loadingScreen(void)
                 printf(RED);
 
             printf("[%-25s]", load);
-
         }
 
         if(useColour)
