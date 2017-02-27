@@ -7,15 +7,15 @@
 enum Result {WIN = 2, LOSS = -1, DRAW = 0, GAMES = 3};
 
 // Adds colour to the output.
-#define ANSI_COLOR_RED     "\x1b[31m"
-#define ANSI_COLOR_GREEN   "\x1b[32m"
-#define ANSI_COLOR_RESET   "\x1b[0m"
+#define RED     "\x1b[31m"
+#define GREEN   "\x1b[32m"
+#define RESET   "\x1b[0m"
 
 typedef struct
 {
     int score[GAMES];
     char choice;
-    char name[10];
+    char name[15];
     bool turn;
 
 }Player;
@@ -33,8 +33,8 @@ void startGame(Game *game, Player *player_1, Player *player_2);
 void display(Game *game, Player *player_1, Player *player_2);
 bool victoryCheck(Game *game);
 bool isComplete(Game *game);
-void playerMove(Game *game, Player *player);
-void gameReset(Game *game);
+void move(Game *game, Player *player);
+void reset(Game *game);
 void scoreBoard(Player *player_1, Player *player_2, int rounds);
 
 int main(void)
@@ -87,15 +87,13 @@ void assignXO(Player *player_1, Player *player_2)
     {
         printf("Enter Player 1's name : ");
         errorCheck = scanf("%s", player_1->name);
-
     } while(errorCheck != 1);
 
     // checks for invalid inputs.
     do
     {
-        printf("Enter Player 1's name : ");
+        printf("Enter Player 2's name : ");
         errorCheck = scanf("%s", player_2->name);
-
     } while(errorCheck != 1);
 
 
@@ -104,9 +102,7 @@ void assignXO(Player *player_1, Player *player_2)
     do
     {
         printf("X or O ?\n");
-
         errorCheck = scanf(" %c", &choice);
-
     }while((choice != 'X' && choice != 'O' && choice != 'x' && choice != 'o') || errorCheck != 1);
 
     player_1->choice = toupper(choice);
@@ -134,7 +130,7 @@ void assignXO(Player *player_1, Player *player_2)
 void startGame(Game *game, Player *player_1, Player *player_2)
 {
     // resets the game board and displays it.
-    gameReset(game);
+    reset(game);
     display(game, player_1, player_2);
 
     // continue the game till either player wins or no more moves are possible.
@@ -143,9 +139,9 @@ void startGame(Game *game, Player *player_1, Player *player_2)
         // players make a move depending on whose turn it is.
 
         if(player_1->turn)
-            playerMove(game, player_1);
+            move(game, player_1);
         else
-            playerMove(game, player_2);
+            move(game, player_2);
 
         display(game, player_1, player_2);
 
@@ -159,12 +155,14 @@ void startGame(Game *game, Player *player_1, Player *player_2)
                 player_1->score[game->rounds] = WIN;
                 player_2->score[game->rounds] = LOSS;
             }
+
             else
             {
                 printf("\n%s Wins!!!", player_2->name);
-                player_2->score[game->rounds] = WIN;
                 player_1->score[game->rounds] = LOSS;
+                player_2->score[game->rounds] = WIN;
             }
+            
             break;
         }
 
@@ -188,7 +186,7 @@ void startGame(Game *game, Player *player_1, Player *player_2)
 }
 
 // stored and checks the move of each player.
-void playerMove(Game *game, Player *player)
+void move(Game *game, Player *player)
 {
     int i, j;
     int errorCheck;
@@ -199,7 +197,6 @@ void playerMove(Game *game, Player *player)
     {
         printf("%s's turn : ", player->name);
         errorCheck = scanf(" %c", &pos);
-
     }while(!isdigit(pos) || !game->validPos[pos - '0'] || errorCheck != 1);
 
     game->validPos[pos - '0'] = false;
@@ -244,10 +241,8 @@ bool isComplete(Game *game)
     int i;
 
     for(i = 1; i < 10; i++)
-    {
         if(game->validPos[i])
             return false;
-    }
 
     return true;
 }
@@ -259,29 +254,36 @@ void display(Game *game, Player *player_1, Player * player_2)
 
     // use system("cls"); if using windows.
     system("clear");
+    printf("\n");
 
-    printf("\n\t------------------\n");
     for(i = 0; i < 3; i++)
     {
+        printf("\t");
         for(j = 0; j < 3; j++)
         {
             if(game->board[i][j] == 'X')
-                printf(ANSI_COLOR_RED "\tX" ANSI_COLOR_RESET);
+                printf(RED " X " RESET);
 
             else if(game->board[i][j] == 'O')
-                printf(ANSI_COLOR_GREEN "\tO" ANSI_COLOR_RESET);
+                printf(GREEN " O " RESET);
 
             else
-                printf("\t%c", game->board[i][j]);
+                printf(" %c ", game->board[i][j]);
+
+            if(j != 2)
+                printf("|");
         }
-        printf("\n\t------------------\n");
+
+        if(i != 2)
+            printf("\n\t------------\n");
     }
-    printf("\n%s - %c\t", player_1->name, player_1->choice);
+
+    printf("\n\n%s - %c\t", player_1->name, player_1->choice);
     printf("%s - %c\n", player_2->name, player_2->choice);
 }
 
 // reset the valid positions and the board.
-void gameReset(Game *game)
+void reset(Game *game)
 {
     int i, j;
     char k = '1';
@@ -322,22 +324,22 @@ void scoreBoard(Player *player_1, Player *player_2, int rounds)
     {
         if(player_1->score[i] == WIN)
         {
-            printf(ANSI_COLOR_GREEN "  %2d", WIN);
-            printf(ANSI_COLOR_RESET "\t");
-            printf(ANSI_COLOR_RED "  %2d", LOSS);
+            printf(GREEN "  %2d", WIN);
+            printf(RESET "\t");
+            printf(RED "  %2d", LOSS);
         }
 
         else if (player_1->score[i] == LOSS)
         {
-            printf(ANSI_COLOR_RED "  %2d", LOSS);
-            printf(ANSI_COLOR_RESET "\t");
-            printf(ANSI_COLOR_GREEN "  %2d", WIN);
+            printf(RED "  %2d", LOSS);
+            printf(RESET "\t");
+            printf(GREEN "  %2d", WIN);
         }
 
         else
             printf("  %2d\t  %2d", DRAW, DRAW);
 
-        printf(ANSI_COLOR_RESET "\n");
+        printf(RESET "\n");
     }
 
     //  display the series result.
