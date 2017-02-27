@@ -56,7 +56,7 @@ int main(void)
     game->rounds = 0;
 
     printf("Current Settings\n\n");
-    printf("Colour: %2d\n", useColour);
+    printf("Colour:  YES\n");
     printf("Games : %2d\n\n", games);
 
     printf("change settings? (y/n): ");
