@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 // points for each result.
-enum Result {WIN = 2, LOSS = -1, DRAW = 0, GAMES = 3};
+enum Result {WIN = 2, LOSS = -1, DRAW = 0};
 
 // Adds colour to the output.
 #define RED     "\x1b[31m"
@@ -16,10 +16,11 @@ enum Result {WIN = 2, LOSS = -1, DRAW = 0, GAMES = 3};
 #define CLEAR "clear"
 
 bool useColour = 1;
+int games = 1;
 
 typedef struct
 {
-    int score[GAMES];
+    int score[10];
     char choice;
     char name[15];
     bool turn;
@@ -54,10 +55,25 @@ int main(void)
     // sets the number of games played to zero.
     game->rounds = 0;
 
-    printf("Do you want to use colour in the output? (y/n): ");
-    if((choice = getchar()) == 'n' || choice == 'N')
-        useColour = false;
+    printf("Current Settings\n\n");
+    printf("Colour: %2d\n", useColour);
+    printf("Games : %2d\n\n", games);
 
+    printf("change settings? (y/n): ");
+
+    if((choice = getchar()) == 'y' || choice == 'Y')
+    {
+        printf("\nUse Colour? (y/n): ");
+        scanf(" %c", &choice);
+
+        if(choice == 'n' || choice == 'N')
+            useColour = false;
+
+        printf("Number of games: ");
+            scanf(" %d", &games);
+    }
+
+    usleep(999000);
     loadingScreen();
     assignXO(player_1, player_2);
     startGame(game, player_1, player_2);
@@ -65,22 +81,16 @@ int main(void)
     // asks user if he/she wants to play another game
     // until the maximum game count is reached. This act as a series of game
     // so that final winner is decided based on the number of matche won out of the
-    // number of  GAMES played.
-    while(game->rounds < GAMES)
+    // number of  games played.
+    while(game->rounds < games)
     {
-        printf("Play again ? (Y/N)\n");
-        if(scanf(" %c", &choice) == 1);
+        printf("Press any key+Enter to continue: ");
+        scanf(" %c", &choice);
 
-        // if yes then start the game again with a fresh board.
-        if(choice == 'y' || choice == 'Y')
-        {
-            player_1->turn = !player_1->turn;
-            player_2->turn = !player_2->turn;
-            startGame(game, player_1, player_2);
-        }
+        player_1->turn = !player_1->turn;
+        player_2->turn = !player_2->turn;
 
-        else
-            break;
+        startGame(game, player_1, player_2);
     }
 
     free(game);
@@ -292,6 +302,7 @@ void display(Game *game, Player *player_1, Player * player_2)
             {
                 if(useColour)
                     printf(RESET);
+
                 printf(" %c ", game->board[i][j]);
             }
 
@@ -333,7 +344,7 @@ void scoreBoard(Player *player_1, Player *player_2, int rounds)
 
     printf("\n==================\n");
     printf("   LEADERBOARD\n\n");
-    printf("   Game (%d / %d)\n", rounds, GAMES);
+    printf("   Game (%d / %d)\n", rounds, games);
     printf("==================\n");
 
     // caculate the score for each player.
@@ -388,7 +399,7 @@ void scoreBoard(Player *player_1, Player *player_2, int rounds)
     //  display the series result.
     printf("==================\n");
     printf("\n");
-    if(rounds == GAMES)
+    if(rounds == games)
     {
         if(totalScore1 > totalScore2)
             printf("%s WINS THE SERIES !\n", player_1->name);
@@ -443,5 +454,4 @@ void loadingScreen(void)
 
     sleep(1);
     system(CLEAR);
-    printf("Game Loaded!\n");
 }
