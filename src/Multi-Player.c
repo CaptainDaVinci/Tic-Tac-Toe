@@ -79,10 +79,7 @@ int main(void)
     assignXO(player_1, player_2);
     startGame(game, player_1, player_2);
 
-    // asks user if he/she wants to play another game
-    // until the maximum game count is reached. This act as a series of game
-    // so that final winner is decided based on the number of matche won out of the
-    // number of  games played.
+    // continue playing till max number of games is reached.
     while (game->rounds < games)
     {
         printf("Press any key+Enter to continue: ");
@@ -129,14 +126,12 @@ void assignXO(Player *player_1, Player *player_2)
 
     player_1->choice = toupper(choice);
 
-    // assign 'X' to player_1
     if (player_1->choice == 'X')
     {
         player_1->choice = 'X';
         player_2->choice = 'O';
     }
 
-    // assign 'O' to player_1
     else
     {
         player_1->choice = 'O';
@@ -151,7 +146,6 @@ void assignXO(Player *player_1, Player *player_2)
 // the main game loop where the moves are made and winner is decided.
 void startGame(Game *game, Player *player_1, Player *player_2)
 {
-    // resets the game board and displays it.
     reset(game);
     display(game, player_1, player_2);
 
@@ -159,7 +153,6 @@ void startGame(Game *game, Player *player_1, Player *player_2)
     while (true)
     {
         // players make a move depending on whose turn it is.
-
         if (player_1->turn)
             move(game, player_1);
         else
@@ -207,7 +200,7 @@ void startGame(Game *game, Player *player_1, Player *player_2)
     scoreBoard(player_1, player_2, game->rounds);
 }
 
-// stored and checks the move of each player.
+// controls and checks the moves made by the player.
 void move(Game *game, Player *player)
 {
     int i, j;
