@@ -5,17 +5,19 @@
 #include <unistd.h>
 
 // points for each result.
-enum Result {WIN = 2, LOSS = -1, DRAW = 0};
+#define WIN 2
+#define LOSS -1
+#define DRAW 0
 
 // Adds colour to the output.
-#define RED     "\x1b[31m"
-#define GREEN   "\x1b[32m"
-#define RESET   "\x1b[0m"
+#define RED "\x1b[31m"
+#define GREEN "\x1b[32m"
+#define RESET "\x1b[0m"
 
 // replace "clear" by "cls" on windows.
 #define CLEAR "clear"
 
-bool useColour = 1;
+bool useColour = true;
 int games = 1;
 
 typedef struct
@@ -25,7 +27,7 @@ typedef struct
     char name[15];
     bool turn;
 
-}Player;
+} Player;
 
 typedef struct
 {
@@ -33,7 +35,7 @@ typedef struct
     bool validPos[10];
     int rounds;
 
-}Game;
+} Game;
 
 void assignXO(Player *player_1, Player *player_2);
 void startGame(Game *game, Player *player_1, Player *player_2);
@@ -48,9 +50,9 @@ void loadingScreen(void);
 int main(void)
 {
     char choice;
-    Game *game = malloc(sizeof( *game));
-    Player *player_1 = malloc(sizeof( *player_1));
-    Player *player_2 = malloc(sizeof( *player_2));
+    Game *game = malloc(sizeof(*game));
+    Player *player_1 = malloc(sizeof(*player_1));
+    Player *player_2 = malloc(sizeof(*player_2));
 
     // sets the number of games played to zero.
     game->rounds = 0;
@@ -61,16 +63,16 @@ int main(void)
 
     printf("change settings? (y/n): ");
 
-    if((choice = getchar()) == 'y' || choice == 'Y')
+    if ((choice = getchar()) == 'y' || choice == 'Y')
     {
         printf("\nUse Colour? (y/n): ");
         scanf(" %c", &choice);
 
-        if(choice == 'n' || choice == 'N')
+        if (choice == 'n' || choice == 'N')
             useColour = false;
 
         printf("Number of games: ");
-            scanf(" %d", &games);
+        scanf(" %d", &games);
     }
 
     usleep(999000);
@@ -82,7 +84,7 @@ int main(void)
     // until the maximum game count is reached. This act as a series of game
     // so that final winner is decided based on the number of matche won out of the
     // number of  games played.
-    while(game->rounds < games)
+    while (game->rounds < games)
     {
         printf("Press any key+Enter to continue: ");
         scanf(" %c", &choice);
@@ -101,23 +103,22 @@ int main(void)
 // assigns either 'X' or 'O' to the players.
 void assignXO(Player *player_1, Player *player_2)
 {
-    char choice;
     int errorCheck;
+    char choice;
 
     // checks for invalid inputs.
     do
     {
         printf("Enter Player 1's name : ");
         errorCheck = scanf("%s", player_1->name);
-    } while(errorCheck != 1);
+    } while (errorCheck != 1);
 
     // checks for invalid inputs.
     do
     {
         printf("Enter Player 2's name : ");
         errorCheck = scanf("%s", player_2->name);
-    } while(errorCheck != 1);
-
+    } while (errorCheck != 1);
 
     printf("\n%s, ", player_1->name);
     // checks for invalid inputs.
@@ -125,12 +126,12 @@ void assignXO(Player *player_1, Player *player_2)
     {
         printf("X or O ?\n");
         errorCheck = scanf(" %c", &choice);
-    }while((choice != 'X' && choice != 'O' && choice != 'x' && choice != 'o') || errorCheck != 1);
+    } while ((choice != 'X' && choice != 'O' && choice != 'x' && choice != 'o') || errorCheck != 1);
 
     player_1->choice = toupper(choice);
 
     // assign 'X' to player_1
-    if(player_1->choice == 'X')
+    if (player_1->choice == 'X')
     {
         player_1->choice = 'X';
         player_2->choice = 'O';
@@ -156,11 +157,11 @@ void startGame(Game *game, Player *player_1, Player *player_2)
     display(game, player_1, player_2);
 
     // continue the game till either player wins or no more moves are possible.
-    while(true)
+    while (true)
     {
         // players make a move depending on whose turn it is.
 
-        if(player_1->turn)
+        if (player_1->turn)
             move(game, player_1);
         else
             move(game, player_2);
@@ -169,9 +170,9 @@ void startGame(Game *game, Player *player_1, Player *player_2)
 
         // check if the move played resulted in a win.
         // declare winner according to the previous turn.
-        if(victoryCheck(game))
+        if (victoryCheck(game))
         {
-            if(player_1->turn)
+            if (player_1->turn)
             {
                 printf("\n%s Wins!!!", player_1->name);
                 player_1->score[game->rounds] = WIN;
@@ -189,7 +190,7 @@ void startGame(Game *game, Player *player_1, Player *player_2)
         }
 
         // check if there are any further possible moves.
-        if(isComplete(game))
+        if (isComplete(game))
         {
             printf("Game Over!\nNo more possible moves\n");
             player_1->score[game->rounds] = DRAW;
@@ -219,15 +220,15 @@ void move(Game *game, Player *player)
     {
         printf("%s's turn : ", player->name);
         errorCheck = scanf(" %c", &pos);
-    }while(!isdigit(pos) || !game->validPos[pos - '0'] || errorCheck != 1);
+    } while (!isdigit(pos) || !game->validPos[pos - '0'] || errorCheck != 1);
 
     game->validPos[pos - '0'] = false;
 
     // if input is valid, then store it in the board.
-    for(i = 0; i < 3; i++)
-        for(j = 0; j < 3; j++)
-            if(game->board[i][j] == pos)
-                    game->board[i][j] = player->choice;
+    for (i = 0; i < 3; i++)
+        for (j = 0; j < 3; j++)
+            if (game->board[i][j] == pos)
+                game->board[i][j] = player->choice;
 }
 
 // checks if the game is completed when there are 3 consecutive X or O
@@ -237,21 +238,21 @@ bool victoryCheck(Game *game)
     int i, j;
 
     // checks along a row.
-    for(i = 0, j = 0; i < 3; i++)
-        if(game->board[i][j] == game->board[i][j + 1] && game->board[i][j] == game->board[i][j + 2])
+    for (i = 0, j = 0; i < 3; i++)
+        if (game->board[i][j] == game->board[i][j + 1] && game->board[i][j] == game->board[i][j + 2])
             return true;
 
     // checks along a coloumn.
-    for(j = 0, i = 0; j < 3; j++)
-        if(game->board[i][j] == game->board[i + 1][j] && game->board[i][j] == game->board[i + 2][j])
+    for (j = 0, i = 0; j < 3; j++)
+        if (game->board[i][j] == game->board[i + 1][j] && game->board[i][j] == game->board[i + 2][j])
             return true;
 
     // checks along right diagonal.
-    if(game->board[0][0] == game->board[1][1] && game->board[0][0] == game->board[2][2])
+    if (game->board[0][0] == game->board[1][1] && game->board[0][0] == game->board[2][2])
         return true;
 
     // checks along left diagonal.
-    if(game->board[0][2] == game->board[1][1] && game->board[0][2] == game->board[2][0])
+    if (game->board[0][2] == game->board[1][1] && game->board[0][2] == game->board[2][0])
         return true;
 
     return false;
@@ -262,37 +263,37 @@ bool isComplete(Game *game)
 {
     int i;
 
-    for(i = 1; i < 10; i++)
-        if(game->validPos[i])
+    for (i = 1; i < 10; i++)
+        if (game->validPos[i])
             return false;
 
     return true;
 }
 
 // displays the game's current status.
-void display(Game *game, Player *player_1, Player * player_2)
+void display(Game *game, Player *player_1, Player *player_2)
 {
     int i, j;
 
     system(CLEAR);
     printf("\n");
 
-    for(i = 0; i < 3; i++)
+    for (i = 0; i < 3; i++)
     {
         printf("\t");
-        for(j = 0; j < 3; j++)
+        for (j = 0; j < 3; j++)
         {
-            if(game->board[i][j] == 'X')
+            if (game->board[i][j] == 'X')
             {
-                if(useColour)
+                if (useColour)
                     printf(RED);
 
                 printf(" X ");
             }
 
-            else if(game->board[i][j] == 'O')
+            else if (game->board[i][j] == 'O')
             {
-                if(useColour)
+                if (useColour)
                     printf(GREEN);
 
                 printf(" O ");
@@ -300,20 +301,20 @@ void display(Game *game, Player *player_1, Player * player_2)
 
             else
             {
-                if(useColour)
+                if (useColour)
                     printf(RESET);
 
                 printf(" %c ", game->board[i][j]);
             }
 
-            if(useColour)
+            if (useColour)
                 printf(RESET);
 
-            if(j != 2)
+            if (j != 2)
                 printf("|");
         }
 
-        if(i != 2)
+        if (i != 2)
             printf("\n\t------------\n");
     }
 
@@ -327,11 +328,11 @@ void reset(Game *game)
     int i, j;
     char k = '1';
 
-    for(i = 1; i < 10; i++)
+    for (i = 1; i < 10; i++)
         game->validPos[i] = true;
 
-    for(i = 0; i < 3; i++)
-        for(j = 0; j < 3; j++)
+    for (i = 0; i < 3; i++)
+        for (j = 0; j < 3; j++)
             game->board[i][j] = k++;
 }
 
@@ -348,44 +349,43 @@ void scoreBoard(Player *player_1, Player *player_2, int rounds)
     printf("==================\n");
 
     // caculate the score for each player.
-    for(i = 0; i < rounds; i++)
+    for (i = 0; i < rounds; i++)
     {
         totalScore1 += player_1->score[i];
         totalScore2 += player_2->score[i];
-
     }
 
     printf("%s[%d]  %s[%d]\n\n", player_1->name, totalScore1, player_2->name, totalScore2);
 
     // display the score on the screen with colour.
-    for(i = 0; i < rounds; i++)
+    for (i = 0; i < rounds; i++)
     {
-        if(player_1->score[i] == WIN)
+        if (player_1->score[i] == WIN)
         {
-            if(useColour)
+            if (useColour)
                 printf(GREEN);
             printf("  %2d", WIN);
 
-            if(useColour)
+            if (useColour)
                 printf(RESET);
             printf("\t");
 
-            if(useColour)
+            if (useColour)
                 printf(RED);
             printf("  %2d", LOSS);
         }
 
         else if (player_1->score[i] == LOSS)
         {
-            if(useColour)
+            if (useColour)
                 printf(RED);
             printf("  %2d", LOSS);
 
-            if(useColour)
+            if (useColour)
                 printf(RESET);
             printf("\t");
 
-            if(useColour)
+            if (useColour)
                 printf(GREEN);
             printf("  %2d", WIN);
         }
@@ -399,12 +399,12 @@ void scoreBoard(Player *player_1, Player *player_2, int rounds)
     //  display the series result.
     printf("==================\n");
     printf("\n");
-    if(rounds == games)
+    if (rounds == games)
     {
-        if(totalScore1 > totalScore2)
+        if (totalScore1 > totalScore2)
             printf("%s WINS THE SERIES !\n", player_1->name);
 
-        else if(totalScore2 > totalScore1)
+        else if (totalScore2 > totalScore1)
             printf("%s WINS THE SERIES !\n", player_2->name);
 
         else
@@ -417,19 +417,19 @@ void loadingScreen(void)
     int i;
     char load[26];
 
-    for(i = 0; i < 25;)
+    for (i = 0; i < 25;)
     {
         system(CLEAR);
         load[i++] = '#';
         load[i] = '\0';
 
-        if(i == 25)
+        if (i == 25)
         {
-            if(useColour)
+            if (useColour)
                 printf(GREEN);
             printf("\n\nLOADING [%-25s]\n", load);
 
-            if(useColour)
+            if (useColour)
                 printf(RESET);
             break;
         }
@@ -437,13 +437,13 @@ void loadingScreen(void)
         else
         {
             printf("\n\nLOADING ");
-            if(useColour)
+            if (useColour)
                 printf(RED);
 
             printf("[%-25s]", load);
         }
 
-        if(useColour)
+        if (useColour)
             printf(RESET);
 
         printf("\n");
