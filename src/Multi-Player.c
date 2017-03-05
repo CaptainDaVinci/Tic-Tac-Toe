@@ -75,7 +75,6 @@ int main(void)
         scanf(" %d", &games);
     }
 
-    usleep(999000);
     loadingScreen();
     assignXO(player_1, player_2);
     startGame(game, player_1, player_2);
