@@ -10,7 +10,7 @@
 #define DRAW 0
 
 // Adds colour to the output.
-#define RED "\x1b[31m"
+#define RED  "\x1b[31m"
 #define GREEN "\x1b[32m"
 #define RESET "\x1b[0m"
 
@@ -407,6 +407,7 @@ void scoreBoard(Player *player_1, Player *player_2, int rounds)
 void loadingScreen(void)
 {
     int i;
+    int padding = 25;
     char load[26];
 
     for (i = 0; i < 25;)
@@ -419,7 +420,7 @@ void loadingScreen(void)
         {
             if (useColour)
                 printf(GREEN);
-            printf("\n\nLOADING [%-25s]\n", load);
+            printf("\n\nLOADING [%-*s]\n", padding, load);
 
             if (useColour)
                 printf(RESET);
