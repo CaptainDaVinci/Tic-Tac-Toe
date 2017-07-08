@@ -39,7 +39,6 @@ void gameSetup(Game *game);
 
 int main(void)
 {
-
     Game *game = malloc(sizeof(*game));
     srand((unsigned)time(NULL));
 
