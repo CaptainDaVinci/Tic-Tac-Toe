@@ -1,10 +1,9 @@
-#Tic-Tac-Toe
+# Tic-Tac-Toe
 A basic Tic-Tac-Toe game implemented in C, which has been overkilled by adding loading screen and a series leaderboard. This game can be played with a _second player_ or with the _computer_.
 * Compiler: GCC.
 * OS: linux Ubuntu.
 
-##Usage
-
+## Usage
 compile and run the code using :
 ```
 $ gcc < file-name > -o game                       
