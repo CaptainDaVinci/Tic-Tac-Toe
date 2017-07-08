@@ -9,6 +9,15 @@
 #define ANSI_COLOR_GREEN "\x1b[32m"
 #define ANSI_COLOR_RESET "\x1b[0m"
 
+/*
+ replace "clear" by "cls" on windows.
+ !DANGEROUS!
+ Don't have any application named 'clear'(linux) or
+ 'cls'(windows) in the same folder.
+*/
+
+#define CLEAR "clear"
+
 typedef struct
 {
     char board[3][3];
@@ -77,7 +86,7 @@ void display(Game *game)
 {
     int i, j;
 
-    system("clear");
+    system(CLEAR);
     printf("\n\t------------------\n");
 
     for (i = 0; i < 3; i++)

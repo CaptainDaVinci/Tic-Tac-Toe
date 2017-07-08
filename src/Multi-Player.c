@@ -14,7 +14,12 @@
 #define GREEN "\x1b[32m"
 #define RESET "\x1b[0m"
 
-// replace "clear" by "cls" on windows.
+/*
+ replace "clear" by "cls" on windows.
+ !DANGEROUS!
+ Don't have any application named 'clear'(linux) or
+ 'cls'(windows) in the same folder.
+*/
 #define CLEAR "clear"
 
 bool useColour = true;
